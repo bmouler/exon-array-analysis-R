@@ -60,20 +60,20 @@ dabg = read.table("output/exon/dabg.summary.txt", header=T, quote="\"", row.name
 qc = read.table("output/exon/rma-sketch.report.txt")
 palette(rainbow(50))
 
-# Let’s look at a plot of the average raw intensity signal. The color legend will be the same for all the QC plots.
+# Letâ€™s look at a plot of the average raw intensity signal. The color legend will be the same for all the QC plots.
 plot(1:44,qc$pm_mean,ylim=c(0,1000),xlab="array",ylab="signal intensity",main="Average Raw Intensity Signal",col=c(1:44),pch=3)
 legend(1,1000,colnames(exon),fill=c(1:44),cex=0.25)
  
-# Examination of the average raw intensity signal doesn’t reveal any outliers.
-# Let’s take a closer look...
+# Examination of the average raw intensity signal doesnâ€™t reveal any outliers.
+# Letâ€™s take a closer look...
 plot(1:44,qc$pm_mean,xlab="array",ylab="signal intensity",main="Average Raw Intensity Signal",col=c(1:44),pch=3) 
  
-# Let’s plot the deviations of residuals from mean:
+# Letâ€™s plot the deviations of residuals from mean:
 plot(1:44,qc$all_probeset_mad_residual_mean,xlab="array",ylab="mean absolute deviation",main="Deviation of Residuals from Mean",col=c(1:44))
 legend(0,43,colnames(exon),fill=c(1:44),cex=0.25)
  
-# Examination of the deviations of residuals from mean doesn’t reveal any outliers.
-# Finally, let’s plot a hierarchical clustering of the normalized data:
+# Examination of the deviations of residuals from mean doesnâ€™t reveal any outliers.
+# Finally, letâ€™s plot a hierarchical clustering of the normalized data:
 cel_files = read.delim("cel_files.txt")
 grouping = cel_files$group_id
 dist = dist(t(exon))
@@ -85,7 +85,7 @@ plot(density(exon[,1]),main="Distribution of RMA-normalized Intensities",xlab="R
 for(i in 2:ncol(exon)) {lines(density(exon[,i]),col=i)}
 legend(12,0.3,colnames(exon),fill=c(1:44), cex=0.25)
  
-# Everything checks out. Let’s filter the probesets.
+# Everything checks out. Letâ€™s filter the probesets.
 # First, we filter for undetected probesets:
 d.mne_als = apply(dabg[,cel_files$group_id == "MNE-ALS "],1,function(x){length(which(x<0.05))})
 d.mne_control = apply(dabg[,cel_files$group_id == "MNE-control "],1,function(x){length(which(x<0.05))})
@@ -184,7 +184,7 @@ head(midas)
 # 111277                             0.4988673
 # 36453                              0.4988673
 
-# It seems that the effects sizes aren’t large enough for classic multiplicity correction techniques like Benjamini-Hochberg and FDR. The lowest p-values are 0.4989 for each of the methods.
+# It seems that the effects sizes arenâ€™t large enough for classic multiplicity correction techniques like Benjamini-Hochberg and FDR. The lowest p-values are 0.4989 for each of the methods.
 # To make sure that the results after multiplicity correction are correct, we can run MiDAS on the unfiltered probesets. Then we load the data into R:
 apt-midas --cel-files .\cel_files2.txt -g .\output\gene\rma-sketch.summary.txt -e .\output\exon\rma-sketch.summary.txt -m .\HuEx-1_0-st-v2.r2.dt1.hg18.core.mps -nol -n -f -o .\output\midas2
 
@@ -206,7 +206,7 @@ summary(p.adjust(midas$pvalue,method="fdr"))
  # 0.5177  0.5653  0.6738  0.7008  0.8158  1.0000
 
 # The rest of the analysis is continued using the filtered dataset.
-# Let’s start the analysis by plotting the distribution of p-values from MiDAS.
+# Letâ€™s start the analysis by plotting the distribution of p-values from MiDAS.
 pcolors = rep("gray", length(midas$pvalue))
 for (i in 1:length(midas$pvalue)) {if (midas$pvalue[i]<0.01) {pcolors[i]="red"} else if (midas$pvalue[i]<0.05) {pcolors[i]="yellow"}}
 plot(-log2(midas$pvalue),type='h', col=pcolors,axes=F,xlab="",ylab="-log10(p-value)",main="MiDAS p-values")
@@ -251,7 +251,7 @@ legend(-200,160,c("MNE-ALS","MNE-control","AH-ALS","AH-control"),fill=c("red","g
  		  
 # The first two plots (p2 vs. p1 and p3 vs. p1) separate the ALS and control classes well. There is also decent separation between the subtypes of ALS and control.
 
-# Let’s look at top significant probes.
+# Letâ€™s look at top significant probes.
 sig = head(midas, 20)
 sig.ann = ann.core[which(ann.core$probeset_id%in%pl),]
 write.table(sig.ann,"sig.txt",sep="\t",quote=F,row.names=F)
@@ -278,7 +278,7 @@ write.table(sig.ann,"sig.txt",sep="\t",quote=F,row.names=F)
 # 3939899	chr22	+	24583540	24583721	4	3939875	1003519	1318083	NM_019601 // SUSD2 /// ENST00000358321 // SUSD2 /// AK126105 // SUSD2 /// ENST00000463101 // SUSD2	NM_019601 // chr22 // 100 // 4 // 4 // 0 /// ENST00000358321 // chr22 // 100 // 4 // 4 // 0 /// AK126105 // chr22 // 100 // 4 // 4 // 0 /// ENST00000463101 // chr22 // 100 // 4 // 4 // 0	1	4	0	4	core	0	0	1	2	2	7	1	0	3	1	1	1	1	1	0	2	8	0	0	0	0	0	main
 # 3960315	chr22	-	38379844	38379875	4	3960302	1015777	1334938	NM_006941 // SOX10 /// ENST00000396884 // SOX10 /// ENST00000360880 // SOX10 /// BC007595 // SOX10 /// ENST00000416937 // SOX10 /// ENST00000427770 // SOX10	NM_006941 // chr22 // 100 // 4 // 4 // 0 /// ENST00000396884 // chr22 // 100 // 4 // 4 // 0 /// ENST00000360880 // chr22 // 100 // 4 // 4 // 0 /// BC007595 // chr22 // 100 // 4 // 4 // 0 /// ENST00000416937 // chr22 // 100 // 4 // 4 // 0 /// ENST00000427770 // chr22 // 100 // 4 // 4 // 0	1	1	0	1	core	0	0	0	3	2	11	1	0	1	0	1	0	0	0	0	3	5	2	1	0	0	0	main
 
-# Let’s visualize the splicing in the top 3 genes between conditions.
+# Letâ€™s visualize the splicing in the top 3 genes between conditions.
 i = as.character(sig[1,2])
 map = ann
 ex = dimnames(map[map$transcript_cluster_id %in% i,])[[1]]
